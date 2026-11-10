@@ -6,7 +6,11 @@ Independent `@mearl/provider-ego` controls one task Space through Ego's native N
 
 ## Install and run
 
-Requires Node.js 22.23.4+, Mearl 3.0.7+ and `ego-browser` on PATH. Validated with Ego Lite 0.6.2.9.
+Requires Node.js 22.23.4+, Mearl 3.0.7+ and an executable `ego-browser`. Validated with Ego Lite 0.6.2.9.
+
+The Provider looks for `ego-browser` on its PATH first. On macOS it also checks Ego's onboarding installation at `~/.local/bin/ego-browser`, without requiring changes to the desktop process PATH. If the command is missing, complete Ego Lite onboarding and submit the request again. Startup failures before the handshake do not permanently disable the Provider. Connection loss or request timeout after connection still requires restarting the Provider and verifying page state; operations are never replayed automatically.
+
+On Windows, the Provider looks for native `ego-browser.exe` on PATH, then checks `%USERPROFILE%\.local\share\ego\active_version_dir\ego-browser.exe`, launching directly without a shell. This installation entry is supported by a [Windows usage report](https://github.com/openai/codex/issues/60444). Path resolution has unit test coverage; a real Windows end-to-end run is still pending. Linux is not yet an officially supported Ego Lite platform.
 
 ```bash
 npx @mearl/setup@latest provider install @mearl/provider-ego

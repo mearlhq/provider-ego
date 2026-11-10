@@ -8,6 +8,10 @@
 
 需要 Node.js 22.23.4+、Mearl 3.0.7+ 和可执行的 `ego-browser`。已在 Ego Lite 0.6.2.9 验证。
 
+Provider 优先从自身 PATH 查找 `ego-browser`，macOS 上也会检查 Ego 引导安装的 `~/.local/bin/ego-browser`，无需修改启动 Mearl 的桌面进程 PATH。找不到命令时会提示完成 Ego Lite 引导安装；安装完成后重新发起请求即可，握手前的启动失败不会使 Provider 永久失效。连接建立后的断线或请求超时仍须重启 Provider 并核对页面状态，不自动重放操作。
+
+Windows 查找 PATH 中的原生 `ego-browser.exe`，再检查 `%USERPROFILE%\.local\share\ego\active_version_dir\ego-browser.exe`，直接启动而不经过 shell。该安装入口有[Windows 使用记录](https://github.com/openai/codex/issues/60444)；路径解析已覆盖单元测试，尚未完成 Windows 真机验证。Linux 尚不在 Ego Lite 官方支持的平台内。
+
 ```bash
 npx @mearl/setup@latest provider install @mearl/provider-ego
 mearl browser_launch --payload '{"provider":"ego","providerOptions":{"name":"我的任务"}}'
