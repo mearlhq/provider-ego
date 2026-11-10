@@ -6,7 +6,7 @@
 
 ## 安装与运行
 
-需要 Node.js 22.23.4+、Mearl 3.0.6+ 和可执行的 `ego-browser`。已在 Ego Lite 0.6.2.9 验证。
+需要 Node.js 22.23.4+、Mearl 3.0.7+ 和可执行的 `ego-browser`。已在 Ego Lite 0.6.2.9 验证。
 
 ```bash
 npx @mearl/setup@latest provider install @mearl/provider-ego
@@ -30,16 +30,16 @@ mearl page_click --browser '<browserId>' --payload '{"tabId":1,"selector":"butto
 
 本包声明 EgoLite 的 macOS Bundle ID。支持协调协议的扩展和 Native Host 会默认关闭该浏览器配置的扩展 Agent 接入；用户仍可在扩展设置中明确切换。需更新核心和扩展并重新注册本包后生效。策略不会同步到其他浏览器，也不会因 Provider 离线自动撤销。空闲页面不进行控制权轮询；仅有待完成的宿主请求时启用检查，结束后停止。每次原生页面操作仍受 Ego 的控制权校验约束。
 
-安装后可使用包内 `mearl-ego` 命令；源码构建也可直接执行 `node dist/cli.js`。这是命令，不是 Skill。
+统一使用 `mearl browser_control`，目标是启动时返回的完整 `browserId`。不传 `--session`，也不需要单独的 Ego 命令。
 
 ```bash
-mearl-ego handoff <spaceId>
+mearl browser_control --browser '<browserId>' --payload '{"operation":"handoff"}'
 # 用户明确交还后才执行：
-mearl-ego resume <spaceId>
-mearl-ego finish <spaceId> --keep p1,p2
+mearl browser_control --browser '<browserId>' --payload '{"operation":"resume"}'
+mearl browser_control --browser '<browserId>' --payload '{"operation":"finish","keepTabIds":[1,2]}'
 ```
 
-`finish` 默认不保留 Agent 页面；用户页面仍受 Ego 保护。保留结果页时明确列出 Ego Page label。`browser_release` 只解绑 Provider，不结束 Space、不恢复模拟；结束任务使用 `finish`。用户接管时所有页面命令都受 Ego 原生控制检查约束，不走扩展旁路。任务控制 CLI 不用于自动抢回控制权。
+`finish` 默认不保留 Agent 页面；用户页面仍受 Ego 保护。保留结果页时用 `keepTabIds` 列出 `tab_list` 返回的数字 ID。`browser_release` 只解绑 Provider，不结束 Space、不恢复模拟；结束任务使用 `browser_control` 的 `finish`。用户接管时所有页面命令都受 Ego 原生控制检查约束，不走扩展旁路。不得自动调用 `resume` 抢回控制权。
 
 ## 设备与 App 模拟
 

@@ -15,7 +15,7 @@ export function createEgoProvider(bridge = new EgoBridge(), publish: (browsers: 
   const browser = (id: number, name: string): ProviderBrowser => ({
     browserId: `space-${id}`, name, status: 'connected', ownership: 'attached', persistence: 'persistent',
     control: { kind: 'provider', capabilities: { actions: ACTIONS, screenshot: 'native', controlSessionMode: 'external' } },
-    operations: ['detach'], references: [{ kind: 'space', id: String(id), label: 'Ego Space' }], details: { spaceId: id },
+    operations: ['detach', 'handoff', 'resume', 'finish'], references: [{ kind: 'space', id: String(id), label: 'Ego Space' }], details: { spaceId: id },
   });
   return {
     descriptor: { providerId: 'ego', name: 'Ego Lite', version: pkg.version, protocolVersion: 3 },
@@ -35,7 +35,18 @@ export function createEgoProvider(bridge = new EgoBridge(), publish: (browsers: 
       publish([...attached].map(([id, value]) => browser(id, value.name)));
       return browser(task.id, task.name);
     },
-    async close() { throw new Error('Use mearl-ego finish SPACE_ID --keep p1,p2 to finish a task without closing the browser'); },
+    async close() { throw new Error('Use mearl browser_control --browser <browserId> --payload \'{"operation":"finish"}\' to finish this task'); },
+    async control({ browserId, operation, tabId, keepTabIds }, context) {
+      const id = spaceId(browserId);
+      if (tabId !== undefined) throw new Error('Ego control applies to the entire Space; omit tabId');
+      if (keepTabIds?.some(id => !Number.isSafeInteger(id) || id < 1)) throw new Error('Ego keepTabIds must be positive integer page IDs');
+      await bridge.control(operation, { spaceId: id, ...(operation === 'finish' ? { keep: (keepTabIds ?? []).map(id => `p${id}`) } : {}) }, context.deadline);
+      if (operation === 'finish') {
+        attached.delete(id);
+        publish([...attached].map(([space, value]) => browser(space, value.name)));
+      }
+      return { controlSessionMode: 'external', operation, control: operation === 'handoff' ? 'user' : operation === 'resume' ? 'agent' : 'finished' };
+    },
     async detach({ browserId }) {
       const id = spaceId(browserId);
       await bridge.request('release', { spaceId: id });

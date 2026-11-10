@@ -1,9 +1,23 @@
 import { afterEach, expect, it, vi } from 'vitest';
 const invoke = vi.hoisted(() => vi.fn());
 vi.mock('./native-page.js', () => ({ nativePage: vi.fn(async () => ({ invoke })), disposeNativePages: vi.fn() }));
-import { dispatch, tabIdOf } from './worker.js';
+import { dispatch, tabIdOf, createWorkerDispatcher } from './worker.js';
 
 afterEach(() => vi.unstubAllGlobals());
+
+it('keeps Space discovery responsive while serializing page operations', async () => {
+  let finish!: () => void;
+  const pending = new Promise<void>(resolve => { finish = resolve; });
+  const execute = vi.fn(async (operation: string) => operation === 'wait' ? pending : operation);
+  const run = createWorkerDispatcher(execute);
+  const deadline = Date.now() + 10000;
+  const first = run({ operation: 'wait', data: {}, deadline });
+  const next = run({ operation: 'click', data: {}, deadline });
+  await expect(run({ operation: 'list', data: {}, deadline })).resolves.toBe('list');
+  expect(execute.mock.calls.map(call => call[0])).not.toContain('click');
+  finish(); await first;
+  await expect(next).resolves.toBe('click');
+});
 
 it('never issues page commands when Ego rejects the Space', async () => {
   const taskSpace = vi.fn().mockRejectedValue(new Error('EGO_TASK_SPACE_USER_IN_CONTROL'));
@@ -42,4 +56,13 @@ it('surfaces native JavaScript errors instead of returning a success', async () 
 it('rejects aliases and unsafe numeric Page IDs', () => {
   expect(tabIdOf('p17')).toBe(17);
   for (const label of ['user-page', 'p0', 'p-1', 'p999999999999999999999']) expect(() => tabIdOf(label)).toThrow();
+});
+
+it('rejects a retained page from another Space before finishing', async () => {
+  const finish = vi.fn();
+  vi.stubGlobal('taskSpace', vi.fn().mockResolvedValue({ pages: async () => [{ label: 'p2' }], finish }));
+  await expect(dispatch('finish', { spaceId: 9, keep: ['p7'] })).rejects.toThrow('must belong');
+  expect(finish).not.toHaveBeenCalled();
+  await dispatch('finish', { spaceId: 9, keep: ['p2'] });
+  expect(finish).toHaveBeenCalledWith({ keep: ['p2'] });
 });

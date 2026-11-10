@@ -6,7 +6,7 @@ Independent `@mearl/provider-ego` controls one task Space through Ego's native N
 
 ## Install and run
 
-Requires Node.js 22.23.4+, Mearl 3.0.6+ and `ego-browser` on PATH. Validated with Ego Lite 0.6.2.9.
+Requires Node.js 22.23.4+, Mearl 3.0.7+ and `ego-browser` on PATH. Validated with Ego Lite 0.6.2.9.
 
 ```bash
 npx @mearl/setup@latest provider install @mearl/provider-ego
@@ -30,16 +30,16 @@ Supports listing/opening/closing pages, navigation, snapshots, clicks, typing, k
 
 This package declares EgoLite's macOS Bundle ID. Extensions and Native Hosts supporting the coordination protocol default that profile's extension Agent access to disabled; users can explicitly change it in extension settings. Update core and extension and register this package again to activate the declaration. The policy never syncs to other browsers or disappears because the Provider goes offline. Idle pages do not poll control ownership. Checks run only while host requests are pending and stop when those requests finish. Ego still enforces control on every native page operation.
 
-After installation, use the included `mearl-ego` command. Source builds can also run `node dist/cli.js` directly. This is a command, not a Skill.
+Use `mearl browser_control` with the full `browserId` returned at launch. Do not pass `--session`; no separate Ego command is required.
 
 ```bash
-mearl-ego handoff <spaceId>
+mearl browser_control --browser '<browserId>' --payload '{"operation":"handoff"}'
 # Only after the user explicitly returns control:
-mearl-ego resume <spaceId>
-mearl-ego finish <spaceId> --keep p1,p2
+mearl browser_control --browser '<browserId>' --payload '{"operation":"resume"}'
+mearl browser_control --browser '<browserId>' --payload '{"operation":"finish","keepTabIds":[1,2]}'
 ```
 
-`finish` keeps no Agent pages by default; Ego protects user pages. Explicitly list Ego Page labels to retain results. `browser_release` only detaches the Provider; it neither finishes the Space nor restores emulation. Use `finish` for task completion. Ego's native control checks govern all page commands during user takeover, with no extension bypass. Never use the control CLI to reclaim control automatically.
+`finish` keeps no Agent pages by default; Ego protects user pages. List numeric IDs returned by `tab_list` in `keepTabIds` to retain results. `browser_release` only detaches the Provider; it neither finishes the Space nor restores emulation. Use `browser_control` with `finish` for task completion. Ego's native control checks govern all page commands during user takeover, with no extension bypass. Never call `resume` to reclaim control automatically.
 
 ## Device and App emulation
 

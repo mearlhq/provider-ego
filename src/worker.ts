@@ -29,6 +29,10 @@ export async function dispatch(operation: string, data: any): Promise<any> {
   const task = await sdk.taskSpace(data.spaceId);
   if (operation === 'handoff') { await task.handOff(); return { spaceId: task.spaceId, control: 'user' }; }
   if (operation === 'finish') {
+    if (data.keep?.length) {
+      const labels = new Set((await task.pages()).map((page: any) => page.label));
+      if (data.keep.some((label: string) => !labels.has(label))) throw new Error('keepTabIds must belong to this task Space');
+    }
     // Dispose only after Ego finishes: a failed/user-blocked finish must retain its pages.
     await task.finish({ keep: data.keep ?? [] });
     if (!(data.keep?.length)) await disposeNativePages(data.spaceId);
@@ -70,20 +74,38 @@ export async function dispatch(operation: string, data: any): Promise<any> {
   return host.invoke(action, p);
 }
 
+/** Read-only Space discovery stays available while page actions wait for user input. */
+export function createWorkerDispatcher(execute = dispatch, signal?: AbortSignal) {
+  let actions = Promise.resolve<unknown>(undefined);
+  return (request: { operation: string; data: any; deadline: number }) => {
+    const run = async () => {
+      signal?.throwIfAborted();
+      if (Date.now() >= request.deadline) throw new Error('Request expired before dispatch');
+      return execute(request.operation, request.data);
+    };
+    if (request.operation === 'list') return run();
+    const result = actions.then(run);
+    actions = result.catch(() => {});
+    return result;
+  };
+}
+
 export async function runWorker(port: number, token: string) {
   const socket = createConnection({ port, host: '127.0.0.1' });
   await new Promise<void>((resolve, reject) => { socket.once('connect', resolve); socket.once('error', reject); });
   socket.write(JSON.stringify({ token }) + '\n');
   const lines = createInterface({ input: socket });
+  const lifetime = new AbortController();
+  const execute = createWorkerDispatcher(dispatch, lifetime.signal);
+  const reply = (message: object) => { if (!lifetime.signal.aborted && !socket.destroyed) socket.write(JSON.stringify(message) + '\n'); };
   try { for await (const line of lines) {
     let request: any;
     try {
       request = JSON.parse(line);
-      if (Date.now() >= request.deadline) throw new Error('Request expired before dispatch');
-      const result = await dispatch(request.operation, request.data);
-      socket.write(JSON.stringify({ id: request.id, result }) + '\n');
+      void execute(request).then(result => reply({ id: request.id, result }), error =>
+        reply({ id: request.id, error: error instanceof Error ? error.message : String(error) }));
     } catch (error) {
-      socket.write(JSON.stringify({ id: request?.id, error: error instanceof Error ? error.message : String(error) }) + '\n');
+      reply({ id: request?.id, error: error instanceof Error ? error.message : String(error) });
     }
-  } } finally { await disposeNativePages(); }
+  } } finally { lifetime.abort(); await disposeNativePages(); }
 }

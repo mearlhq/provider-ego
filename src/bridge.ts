@@ -13,6 +13,13 @@ export class EgoBridge {
   private pending = new Map<string, { resolve(value: any): void; reject(error: Error): void; timer: NodeJS.Timeout }>();
   constructor(private executable = 'ego-browser') {}
 
+  /** Lifecycle control must not wait behind a page action awaiting human input. */
+  async control(operation: 'handoff' | 'resume' | 'finish', data: any, deadline?: number): Promise<any> {
+    const channel = new EgoBridge(this.executable);
+    try { return await channel.request(operation, data, deadline); }
+    finally { channel.close(); }
+  }
+
   private start(): Promise<void> {
     return this.startup ??= new Promise((resolve, reject) => {
       const token = randomUUID();
