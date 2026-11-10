@@ -1,12 +1,13 @@
 {
   "name": "@mearl/provider-ego",
-  "version": "0.1.0-beta.0",
+  "version": "0.1.0",
   "description": "Extension-free Ego Lite Space provider for Mearl",
   "type": "module",
   "license": "Apache-2.0",
   "repository": { "type": "git", "url": "git+https://github.com/mearlhq/provider-ego.git" },
   "homepage": "https://github.com/mearlhq/provider-ego#readme",
   "bugs": { "url": "https://github.com/mearlhq/provider-ego/issues" },
+  "publishConfig": { "access": "public", "registry": "https://registry.npmjs.org/" },
   "engines": { "node": ">=22.23.4" },
   "packageManager": "pnpm@10.34.5",
   "bin": { "mearl-ego": "dist/cli.js" },
@@ -18,11 +19,11 @@
     "prepublishOnly": "pnpm build"
   },
   "dependencies": {
-    "@mearl/provider": "3.0.5",
-    "@mearl/browser-core": "3.0.5",
-    "@mearl/preset": "3.0.5"
+    "@mearl/provider": "3.0.6",
+    "@mearl/browser-core": "3.0.6",
+    "@mearl/preset": "3.0.6"
   },
-  "devDependencies": { "@mearl/native-host": "3.0.5", "esbuild": "^0.28.2", "@types/node": "^24.9.1", "typescript": "^5.8.3", "vitest": "4.1.8" },
+  "devDependencies": { "@mearl/native-host": "3.0.6", "esbuild": "^0.28.2", "@types/node": "^24.9.1", "typescript": "^5.8.3", "vitest": "4.1.8" },
   "mearl": {
     "provider": {
       "providerId": "ego", "name": "Ego Lite", "protocolVersion": 3,

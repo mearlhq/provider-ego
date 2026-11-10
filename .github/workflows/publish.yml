@@ -1,0 +1,85 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the verified package to npm and GitHub
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      version: ${{ steps.package.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm typecheck && pnpm test && pnpm build
+      - id: package
+        run: |
+          version=$(node -p 'require("./package.json").version')
+          test -f "changelogs/v$version.md"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          pnpm pack --out provider.tgz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npm-package
+          path: provider.tgz
+          if-no-files-found: error
+
+  publish:
+    if: inputs.publish
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: npm
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+      - uses: actions/download-artifact@v4
+        with:
+          name: npm-package
+          path: release
+      - name: Publish the immutable package
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          node scripts/publish-package.mjs release/provider.tgz
+          mv release/provider.tgz "release/mearl-provider-ego-$RELEASE_VERSION.tgz"
+          if gh release view "v$RELEASE_VERSION" > /dev/null 2>&1; then
+            test "$(gh api "repos/$GITHUB_REPOSITORY/commits/v$RELEASE_VERSION" --jq .sha)" = "$GITHUB_SHA"
+            gh release view "v$RELEASE_VERSION" --json assets --jq '.assets[].name' > release-assets.txt
+            if grep -Fx "mearl-provider-ego-$RELEASE_VERSION.tgz" release-assets.txt; then
+              gh release download "v$RELEASE_VERSION" --pattern "mearl-provider-ego-$RELEASE_VERSION.tgz" --dir existing
+              cmp "existing/mearl-provider-ego-$RELEASE_VERSION.tgz" "release/mearl-provider-ego-$RELEASE_VERSION.tgz"
+            else
+              gh release upload "v$RELEASE_VERSION" "release/mearl-provider-ego-$RELEASE_VERSION.tgz"
+            fi
+          else
+            gh release create "v$RELEASE_VERSION" "release/mearl-provider-ego-$RELEASE_VERSION.tgz" --target "$GITHUB_SHA" --title "v$RELEASE_VERSION" --notes-file "changelogs/v$RELEASE_VERSION.md"
+          fi

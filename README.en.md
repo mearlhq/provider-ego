@@ -6,12 +6,10 @@ Independent `@mearl/provider-ego` controls one task Space through Ego's native N
 
 ## Install and run
 
-Requires Node.js 22.23.4+, Mearl 3.0.5+ and `ego-browser` on PATH. Validated with Ego Lite 0.6.2.9. This is a local development package, not yet published to npm.
+Requires Node.js 22.23.4+, Mearl 3.0.6+ and `ego-browser` on PATH. Validated with Ego Lite 0.6.2.9.
 
 ```bash
-pnpm install --frozen-lockfile --ignore-scripts
-MEARL_EGO_NATIVE_HOST_PACKAGE=/absolute/path/to/native-host.tgz pnpm build
-npx @mearl/setup provider install /absolute/path/to/provider-ego
+npx @mearl/setup@latest provider install @mearl/provider-ego
 mearl browser_launch --payload '{"provider":"ego","providerOptions":{"name":"My task"}}'
 ```
 
@@ -24,7 +22,7 @@ mearl page_snapshot --browser '<browserId>' --payload '{"tabId":1}'
 mearl page_click --browser '<browserId>' --payload '{"tabId":1,"selector":"button"}'
 ```
 
-Source builds require an SDK archive exporting `@mearl/native-host/external-page-host`; npm 3.0.5 does not include this interface. Build Native Host in the core repository, then run `pnpm pack --out /absolute/path/to/native-host.tgz` in that package. Pass the archive through the environment variable above. The SDK is bundled into the Provider; installing a built package requires neither this variable nor another Native Host process.
+Source builds use the locked, published SDK: run `pnpm install --frozen-lockfile --ignore-scripts` and `pnpm build`, then install and register with `npx @mearl/setup@latest provider install '@mearl/provider-ego@/absolute/path/to/provider-ego'`. The SDK is bundled into the Provider, so a built package needs no additional Native Host process. To test an unpublished SDK, pack Native Host as a tgz and override with `MEARL_EGO_NATIVE_HOST_PACKAGE=/absolute/path/to/native-host.tgz pnpm build`; remove `.cache/native-host` to return to the locked SDK.
 
 Supports listing/opening/closing pages, navigation, snapshots, clicks, typing, keys, scrolling, hovering, waits, JavaScript evaluation, frame-targeted operations, native screenshots and uploads. The shared native page host owns page operations and snapshot refs. A dispatch receipt does not verify the business outcome; inspect a snapshot or page state.
 
@@ -32,13 +30,13 @@ Supports listing/opening/closing pages, navigation, snapshots, clicks, typing, k
 
 This package declares EgoLite's macOS Bundle ID. Extensions and Native Hosts supporting the coordination protocol default that profile's extension Agent access to disabled; users can explicitly change it in extension settings. Update core and extension and register this package again to activate the declaration. The policy never syncs to other browsers or disappears because the Provider goes offline. Idle pages do not poll control ownership. Checks run only while host requests are pending and stop when those requests finish. Ego still enforces control on every native page operation.
 
-Source installations can invoke this package's CLI. The package also includes a `mearl-ego` executable for distribution; this is a command, not a Skill.
+After installation, use the included `mearl-ego` command. Source builds can also run `node dist/cli.js` directly. This is a command, not a Skill.
 
 ```bash
-node /absolute/path/to/provider-ego/dist/cli.js handoff <spaceId>
+mearl-ego handoff <spaceId>
 # Only after the user explicitly returns control:
-node /absolute/path/to/provider-ego/dist/cli.js resume <spaceId>
-node /absolute/path/to/provider-ego/dist/cli.js finish <spaceId> --keep p1,p2
+mearl-ego resume <spaceId>
+mearl-ego finish <spaceId> --keep p1,p2
 ```
 
 `finish` keeps no Agent pages by default; Ego protects user pages. Explicitly list Ego Page labels to retain results. `browser_release` only detaches the Provider; it neither finishes the Space nor restores emulation. Use `finish` for task completion. Ego's native control checks govern all page commands during user takeover, with no extension bypass. Never use the control CLI to reclaim control automatically.
@@ -73,3 +71,9 @@ MEARL_EGO_TEST_UA='ExampleApp/' node scripts/live-smoke.mjs
 ```
 
 The real-browser test requires an installed App capability. Replace the example environment variables with its ID, a boolean expression detecting its page bridge, and a UA substring. The expression must return false after clearing the App. The script creates a dedicated Space and checks input, clicks, handoff blocking, resume, the device shell, root WebView navigation, restoration and completion. It closes the Space on success and retains it for diagnosis on failure. Screenshot: `/tmp/mearl-ego-provider-smoke.png`. Regression tests cover authorization controller integration and cancellation; the script does not initiate real pairing.
+
+## Publishing
+
+Commit the version, lockfile and bilingual `changelogs/v<version>` files, then run **Publish** in GitHub Actions on `main`. The workflow builds, tests and stores the package before publishing to npm and GitHub Releases using npm trusted publishing (OIDC). The `npm` environment permits only `main`, with no long-lived npm token. Disable the `publish` option to validate and produce an artifact only.
+
+After a publication failure, rerun only the failed publish job to reuse the verified artifact. An existing npm version is skipped only when its integrity matches; existing GitHub assets are verified, never overwritten. Stop and inspect the state if artifacts expire or contents conflict.
