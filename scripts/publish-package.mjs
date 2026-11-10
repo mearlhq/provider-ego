@@ -2,8 +2,10 @@ import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import { resolve } from 'node:path';
 
 export function publishPackage(archive, manifest, run = spawnSync) {
+  archive = resolve(archive);
   const integrity = 'sha512-' + createHash('sha512').update(readFileSync(archive)).digest('base64');
   const result = run('npm', ['view', `${manifest.name}@${manifest.version}`, 'dist.integrity', '--json', '--registry=https://registry.npmjs.org/'], { encoding: 'utf8' });
   if (result.error) throw result.error;
