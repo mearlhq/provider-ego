@@ -1,0 +1,49 @@
+{
+  "name": "@mearl/provider-ego",
+  "version": "0.1.0-beta.0",
+  "description": "Extension-free Ego Lite Space provider for Mearl",
+  "type": "module",
+  "license": "Apache-2.0",
+  "repository": { "type": "git", "url": "git+https://github.com/mearlhq/provider-ego.git" },
+  "homepage": "https://github.com/mearlhq/provider-ego#readme",
+  "bugs": { "url": "https://github.com/mearlhq/provider-ego/issues" },
+  "engines": { "node": ">=22.23.4" },
+  "packageManager": "pnpm@10.34.5",
+  "bin": { "mearl-ego": "dist/cli.js" },
+  "files": ["dist", "README.md", "README.en.md"],
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "node build.mjs --typecheck",
+    "test": "vitest run",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "@mearl/provider": "3.0.5",
+    "@mearl/browser-core": "3.0.5",
+    "@mearl/preset": "3.0.5"
+  },
+  "devDependencies": { "@mearl/native-host": "3.0.5", "esbuild": "^0.28.2", "@types/node": "^24.9.1", "typescript": "^5.8.3", "vitest": "4.1.8" },
+  "mearl": {
+    "provider": {
+      "providerId": "ego", "name": "Ego Lite", "protocolVersion": 3,
+      "entry": "./dist/runtime.js",
+      "extensionAgentDefault": { "macBundleIds": ["com.citrolabs.ego.lite"] },
+      "browserType": {
+        "name": "Ego Space", "controlSessionModes": ["external"],
+        "help": [
+          "Each browser is one Ego Space. No browser extension is required.",
+          "Launch with a task name, or attach to an existing agent-owned spaceId. User-owned Spaces are never claimed implicitly.",
+          "Use mearl-ego handoff SPACE_ID, resume SPACE_ID, or finish SPACE_ID --keep p1,p2. Resume only after the user returns control.",
+          "Mearl --session is not used. Device shells, root WebViews and installed App host services run through Ego native CDP. Real authorization requires the user's approval."
+        ],
+        "inputSchema": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "name": {"type": "string", "minLength": 1, "title": "Task name"},
+            "spaceId": {"type": "number", "integer": true, "minimum": 0, "title": "Existing agent Space ID"}
+          }
+        }
+      }
+    }
+  }
+}
