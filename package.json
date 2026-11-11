@@ -1,6 +1,6 @@
 {
   "name": "@mearl/provider-ego",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Extension-free Ego Lite Space provider for Mearl",
   "type": "module",
   "license": "Apache-2.0",
@@ -29,19 +29,45 @@
       "entry": "./dist/runtime.js",
       "extensionAgentDefault": { "macBundleIds": ["com.citrolabs.ego.lite"] },
       "browserType": {
-        "name": "Ego Space", "controlSessionModes": ["external"],
+        "name": "EgoLite", "controlSessionModes": ["external"],
         "help": [
-          "Each browser is one Ego Space. No browser extension is required.",
-          "Launch with a task name, or attach to an existing agent-owned spaceId. User-owned Spaces are never claimed implicitly.",
-          "Use mearl browser_control --browser <browserId> with operation handoff, resume or finish. finish accepts keepTabIds. Resume only after the user explicitly returns control.",
-          "Mearl --session is not used. Device shells, root WebViews and installed App host services run through Ego native CDP. Real authorization requires the user's approval."
+          "每个浏览器实例对应一个 Ego Space，无需安装浏览器扩展。",
+          "填写任务名称新建 Space，或用 spaceId 接入已有的 Agent Space。用户自己的 Space 不会被自动接管。",
+          "用 mearl browser_control --browser <browserId> 交还控制权（handoff）、恢复控制（resume）或结束任务（finish）。结束时可用 keepTabIds 保留指定页面。仅在用户明确交回控制权后恢复。",
+          "Ego 不使用 Mearl 的 --session 参数。设备外壳、根 WebView 和已安装应用的宿主服务通过 Ego 原生 CDP 运行。实际授权需要用户确认。"
         ],
         "inputSchema": {
           "type": "object", "additionalProperties": false,
           "properties": {
-            "name": {"type": "string", "minLength": 1, "title": "Task name"},
-            "spaceId": {"type": "number", "integer": true, "minimum": 0, "title": "Existing agent Space ID"}
-          }
+            "name": {
+              "type": "string", "minLength": 1, "title": "任务名称",
+              "placeholder": "例如：整理网页资料",
+              "description": "新建 Space 时填写；接入已有 Space 时留空。",
+              "locales": {
+                "en": {
+                  "title": "Task name",
+                  "placeholder": "For example, organize research notes",
+                  "description": "Enter a name to create a Space. Leave blank to attach to an existing Space."
+                }
+              }
+            },
+            "spaceId": {
+              "type": "number", "integer": true, "minimum": 0, "title": "已有 Space ID",
+              "placeholder": "例如：123",
+              "description": "仅支持接入 Agent 的 Space；新建时留空。",
+              "locales": {
+                "en": {
+                  "title": "Existing Space ID",
+                  "placeholder": "For example, 123",
+                  "description": "Enter an Agent-owned Space ID. Leave blank to create a Space."
+                }
+              }
+            }
+          },
+          "oneOf": [
+            {"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"], "additionalProperties": false},
+            {"type": "object", "properties": {"spaceId": {"type": "number"}}, "required": ["spaceId"], "additionalProperties": false}
+          ]
         }
       }
     }
