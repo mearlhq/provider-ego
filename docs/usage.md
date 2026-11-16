@@ -30,7 +30,7 @@ mearl page_click --browser '<browserId>' --payload '{"tabId":1,"selector":"butto
 
 ## 接管、交还与收尾
 
-本包声明 EgoLite 的 macOS Bundle ID。支持协调协议的扩展和 Native Host 会默认关闭该浏览器配置的扩展 Agent 接入；用户仍可在扩展设置中明确切换。需更新核心和扩展并重新注册本包后生效。策略不会同步到其他浏览器，也不会因 Provider 离线自动撤销。空闲页面不进行控制权轮询；仅有待完成的宿主请求时启用检查，结束后停止。每次原生页面操作仍受 Ego 的控制权校验约束。
+本包声明 EgoLite 的 macOS Bundle ID。更新 Mearl 扩展和 Native Host 后，已注册的声明会让 CLI、SDK 和 MCP 通过 Ego Provider 发现 Space。EgoLite 扩展内的工具箱和 Agent 服务按扩展设置运行。发现规则以本机 Provider 注册为准。每次原生页面操作均受 Ego 的控制权校验约束。宿主仅在有待完成的请求时轮询控制权，请求结束后停止。
 
 统一使用 `mearl browser_control`，目标是启动时返回的完整 `browserId`。不传 `--session`，也不需要单独的 Ego 命令。
 

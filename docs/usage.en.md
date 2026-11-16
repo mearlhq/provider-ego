@@ -30,7 +30,7 @@ Supports listing/opening/closing pages, navigation, snapshots, clicks, typing, k
 
 ## Handoff, resume and completion
 
-This package declares EgoLite's macOS Bundle ID. Extensions and Native Hosts supporting the coordination protocol default that profile's extension Agent access to disabled; users can explicitly change it in extension settings. Update core and extension and register this package again to activate the declaration. The policy never syncs to other browsers or disappears because the Provider goes offline. Idle pages do not poll control ownership. Checks run only while host requests are pending and stop when those requests finish. Ego still enforces control on every native page operation.
+This package declares EgoLite's macOS Bundle ID. After updating the Mearl extension and Native Host, the registered declaration makes the CLI, SDK and MCP discover Spaces through the Ego Provider. The toolbox and Agent service inside the EgoLite extension follow its settings. Discovery follows the local Provider registration. Ego enforces control on every native page operation. The host polls for control changes while requests are pending and stops when they finish.
 
 Use `mearl browser_control` with the full `browserId` returned at launch. Do not pass `--session`; no separate Ego command is required.
 
