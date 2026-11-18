@@ -9,18 +9,18 @@ importers:
   .:
     dependencies:
       '@mearl/browser-core':
-        specifier: 3.0.10
-        version: 3.0.10
+        specifier: 3.1.4
+        version: 3.1.4
       '@mearl/preset':
-        specifier: 3.0.10
-        version: 3.0.10
+        specifier: 3.1.4
+        version: 3.1.4
       '@mearl/provider':
-        specifier: 3.0.10
-        version: 3.0.10
+        specifier: 3.1.4
+        version: 3.1.4
     devDependencies:
       '@mearl/native-host':
-        specifier: 3.0.10
-        version: 3.0.10
+        specifier: 3.1.4
+        version: 3.1.4
       '@types/node':
         specifier: ^24.9.1
         version: 24.19.2
@@ -195,47 +195,47 @@ packages:
   '@jridgewell/sourcemap-codec@1.6.0':
     resolution: {integrity: sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw==}
 
-  '@mearl/agent-runtime@3.0.10':
-    resolution: {integrity: sha512-3Q2hJKBPKG4W2pF9QCB1MhSPODjE8G6+l4rzyh9KE4DFXIbDDhk2eTdgRSZ4fdMbXPjCKeDxbYVj6JWZdUNWoQ==}
+  '@mearl/agent-runtime@3.1.4':
+    resolution: {integrity: sha512-gL3bVY9x0yEKSVxW1fsrM/gmM6vMGMfe7/LZlMHu9BOury1xbxTbfPX64Ee+wuk8/kNS1WYXNgAQcGfV4mUl8w==}
     engines: {node: '>=20.18.0'}
 
-  '@mearl/app-profiles@3.0.10':
-    resolution: {integrity: sha512-O03UGWjD3hbuSwo9XTyawSu/lkK0C5djy8letcEueZt6qWjzTwwfsmbR0+us7GVlMIpqDF74tUPizP7bp4oHUQ==}
+  '@mearl/app-profiles@3.1.4':
+    resolution: {integrity: sha512-H9j4xaGeHglZOZOHlu3KIcELIzfYvsQtu7f/G77Oe5+uMnKUXbeSU5FOiCOjxQTIfPA+xzuriARzC7sW4iei8Q==}
 
-  '@mearl/browser-core@3.0.10':
-    resolution: {integrity: sha512-UxrZUKPXkaO3aRmO1zp/1iooSZ3xI1LWfSsS0WZkt4OE/b0E+K2ofM9PBWfFKMTwiUQxBMSBl1T57/JHvmL6ew==}
+  '@mearl/browser-core@3.1.4':
+    resolution: {integrity: sha512-TjigU6ljpwpmYE37K/tNo7b6124pxxWTnLraYU5dnjWBHwuGpr0Vlo4fwWwDdzdhHLZUJXxkTK70CyhWntCYjw==}
 
-  '@mearl/client@3.0.10':
-    resolution: {integrity: sha512-JRk1QwjWk9btx+NK4VXGS09Zzynt/gWNq5llRqTs9foWl2mlze/peBptJqsPFgOL/JLK5J/70aPgvF4QlOA0eg==}
-    engines: {node: '>=20.18.0'}
-    hasBin: true
-
-  '@mearl/cloud-types@3.0.10':
-    resolution: {integrity: sha512-jnkrcCE/yxs/3S7PcfsgcEbmbDAKQZyHeUjf6xQnhhUUtaEymeSVJu0QQshGdDbRvtmJIzUjcywci2bMBXkvuw==}
-    engines: {node: '>=20.18.0'}
-
-  '@mearl/daemon-core@3.0.10':
-    resolution: {integrity: sha512-ZANPNwe7J8PEPN82Wa12Ge8YvDw1YE7Ezn4cJfjhbZ8POPnUcGPPSqTjNRTT3LD4EH7WAnZ50nutnpmeBkwX1Q==}
-    engines: {node: '>=20.18.0'}
-
-  '@mearl/native-host@3.0.10':
-    resolution: {integrity: sha512-kvDV84Lvp55MI/Legk+tOohvFLkk152F6RcDKuQfN7rJ84uD2i35XYP3tvDmav4IgtXaqNfWPTauCIIHF0DbWg==}
+  '@mearl/client@3.1.4':
+    resolution: {integrity: sha512-TaJqJ0bEDZpXsFgV7RCpDAEVmPQ/NHEsUpGkIn3EalTfMh1jAcdpT65we485gw9si0hPlpqJp5gjtELYE6I2aw==}
     engines: {node: '>=20.18.0'}
     hasBin: true
 
-  '@mearl/plugin-tracking@3.0.10':
-    resolution: {integrity: sha512-LkruPOsYP2CLHya6TfsGLlMLGS5nJNMHXwGXqa/raoAGGFnCt425kgfN7Jd9zHBm4ux4//5kG/KREQmJXA9hwQ==}
+  '@mearl/cloud-types@3.1.4':
+    resolution: {integrity: sha512-v0xVCgXnTxzw8Oni2Bh4cBCNj92q9MnTJBDjFcF5y/XnPpj3GQWDk3U/YzbyBTXEtfBVBfjMoEkmpf8bb+3wfg==}
     engines: {node: '>=20.18.0'}
 
-  '@mearl/preset@3.0.10':
-    resolution: {integrity: sha512-3RaCQqaCMa5+heUtTDC8j2zz5dIF+NxuZe1W79NITDwX2Q4mansjznf3n8OQ/NQxS6geW+uElTOZzjR5XQB1cA==}
-
-  '@mearl/provider@3.0.10':
-    resolution: {integrity: sha512-qWlsgma3NbhCE7J6G2XEV/IlJ9p0v2TmR3IVUkT4HLu/qiT9jTLWKFBRnIAS9Ft74lw+vKnXwzPG6gEP/hmXIQ==}
+  '@mearl/daemon-core@3.1.4':
+    resolution: {integrity: sha512-q6DgArFnUkKDWE9xXPCu13i/7bFNBI/3iLQHyl5BbEWGof90fOSC7exeBWcz4GYMS3Od1l3WX0CHJnAuKoZ+cw==}
     engines: {node: '>=20.18.0'}
 
-  '@mearl/setup@3.0.10':
-    resolution: {integrity: sha512-GSuIkCrt6PV8BI0L8eK/iQwLcBb2qzrLsjadIGW8Vq3+rJXKkThm9bPXTOynK8zUUhS7piFG45UBud5+LdJ3iQ==}
+  '@mearl/native-host@3.1.4':
+    resolution: {integrity: sha512-1xg7v4wIeKeLUy6FMSuHl9JG5CzEvkfyTKS+prkyeFA2FLpJpQ/rd0JVtkKNmEjcihtW69yuzwe7wx1eUvm9/g==}
+    engines: {node: '>=20.18.0'}
+    hasBin: true
+
+  '@mearl/plugin-tracking@3.1.4':
+    resolution: {integrity: sha512-n3/Z2ccMrrgfxV8WfaueFKQxgtoz0ijnhJ7pPLU5upzmQEbg3vwtFN05sQK6iQW/vhEAjO0HnxEkzEpj3M/W4g==}
+    engines: {node: '>=20.18.0'}
+
+  '@mearl/preset@3.1.4':
+    resolution: {integrity: sha512-VvjibZ9JiV5OU/CvURKOijPmMMgd1zTr8/949o6Vyscy6Z24wCZMHgPl+31T6spMVYO+XBgYK97RtzOsPF3B8Q==}
+
+  '@mearl/provider@3.1.4':
+    resolution: {integrity: sha512-gvbmhc/Gfe3WvH0wmpo7/oqRVli9nFIYBrE8Y0J84yMWIhNwYqbI8MLO+ilqPpsN6kqGF990H6VVJM9WQFgrCA==}
+    engines: {node: '>=20.18.0'}
+
+  '@mearl/setup@3.1.4':
+    resolution: {integrity: sha512-NaBpnxWBADQxkUWlY56mRnLJOJ+Ay8H6AChhXZbh3UpBpbK5SS7aHXdxL7y/j2X/89YzyXvNaMUaWHTI4fYb5Q==}
     engines: {node: '>=20.18.0'}
     hasBin: true
 
@@ -584,6 +584,7 @@ packages:
 
   tldts-core@7.4.20:
     resolution: {integrity: sha512-C630TWXZCZmLq0F2bW4QqwnaaxCQ/svpAqvJwnC4JvgEM5ohhBnGsEzTLSOXcN+xjz+kEaHS5uoWIw2klnqd0A==}
+    deprecated: Partial release, see https://github.com/remusao/tldts/issues/2735. Use >=7.4.22.
 
   tldts@7.4.19:
     resolution: {integrity: sha512-48dH6aSpQnpbzDUc4vIQZ1VjB8tkK+e8c1yx05/SZK+rkssgjEOlxDd/yU8/a4vGYQ9vRgJr9dwMq9TJ0b3X2Q==}
@@ -787,24 +788,24 @@ snapshots:
 
   '@jridgewell/sourcemap-codec@1.6.0': {}
 
-  '@mearl/agent-runtime@3.0.10':
+  '@mearl/agent-runtime@3.1.4':
     dependencies:
-      '@mearl/browser-core': 3.0.10
-      '@mearl/daemon-core': 3.0.10
+      '@mearl/browser-core': 3.1.4
+      '@mearl/daemon-core': 3.1.4
 
-  '@mearl/app-profiles@3.0.10':
+  '@mearl/app-profiles@3.1.4':
     dependencies:
-      '@mearl/browser-core': 3.0.10
+      '@mearl/browser-core': 3.1.4
 
-  '@mearl/browser-core@3.0.10': {}
+  '@mearl/browser-core@3.1.4': {}
 
-  '@mearl/client@3.0.10':
+  '@mearl/client@3.1.4':
     dependencies:
-      '@mearl/agent-runtime': 3.0.10
-      '@mearl/browser-core': 3.0.10
-      '@mearl/cloud-types': 3.0.10
-      '@mearl/daemon-core': 3.0.10
-      '@mearl/provider': 3.0.10
+      '@mearl/agent-runtime': 3.1.4
+      '@mearl/browser-core': 3.1.4
+      '@mearl/cloud-types': 3.1.4
+      '@mearl/daemon-core': 3.1.4
+      '@mearl/provider': 3.1.4
       commander: 14.0.3
       fastest-levenshtein: 1.0.16
       ws: 8.22.2
@@ -812,23 +813,23 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@mearl/cloud-types@3.0.10': {}
+  '@mearl/cloud-types@3.1.4': {}
 
-  '@mearl/daemon-core@3.0.10':
+  '@mearl/daemon-core@3.1.4':
     dependencies:
-      '@mearl/preset': 3.0.10
+      '@mearl/preset': 3.1.4
 
-  '@mearl/native-host@3.0.10':
+  '@mearl/native-host@3.1.4':
     dependencies:
-      '@mearl/agent-runtime': 3.0.10
-      '@mearl/app-profiles': 3.0.10
-      '@mearl/browser-core': 3.0.10
-      '@mearl/client': 3.0.10
-      '@mearl/daemon-core': 3.0.10
-      '@mearl/plugin-tracking': 3.0.10
-      '@mearl/preset': 3.0.10
-      '@mearl/provider': 3.0.10
-      '@mearl/setup': 3.0.10
+      '@mearl/agent-runtime': 3.1.4
+      '@mearl/app-profiles': 3.1.4
+      '@mearl/browser-core': 3.1.4
+      '@mearl/client': 3.1.4
+      '@mearl/daemon-core': 3.1.4
+      '@mearl/plugin-tracking': 3.1.4
+      '@mearl/preset': 3.1.4
+      '@mearl/provider': 3.1.4
+      '@mearl/setup': 3.1.4
       '@types/node': 24.19.2
       '@types/ws': 8.18.2
       semver: 7.8.6
@@ -839,26 +840,26 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@mearl/plugin-tracking@3.0.10':
+  '@mearl/plugin-tracking@3.1.4':
     dependencies:
-      '@mearl/browser-core': 3.0.10
+      '@mearl/browser-core': 3.1.4
 
-  '@mearl/preset@3.0.10':
+  '@mearl/preset@3.1.4':
     dependencies:
       semver: 7.8.6
 
-  '@mearl/provider@3.0.10':
+  '@mearl/provider@3.1.4':
     dependencies:
-      '@mearl/browser-core': 3.0.10
-      '@mearl/daemon-core': 3.0.10
+      '@mearl/browser-core': 3.1.4
+      '@mearl/daemon-core': 3.1.4
 
-  '@mearl/setup@3.0.10':
+  '@mearl/setup@3.1.4':
     dependencies:
-      '@mearl/browser-core': 3.0.10
-      '@mearl/client': 3.0.10
-      '@mearl/daemon-core': 3.0.10
-      '@mearl/preset': 3.0.10
-      '@mearl/provider': 3.0.10
+      '@mearl/browser-core': 3.1.4
+      '@mearl/client': 3.1.4
+      '@mearl/daemon-core': 3.1.4
+      '@mearl/preset': 3.1.4
+      '@mearl/provider': 3.1.4
       adm-zip: 0.6.1
       commander: 14.0.3
       semver: 7.8.6
