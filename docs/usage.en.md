@@ -57,6 +57,8 @@ Clicks, navigation and screenshots reuse the native page host, including device 
 
 Set `deviceShell: true` in `set_device_emulation` or `set_app_profile.emulation` for the device shell and root WebView. The shared host handles container navigation, iframes, network controls, and installed App protocol, identity and authorization services. The page runtime displays authorization progress and pairing codes; the user must complete real approval. Handoff aborts the authorization lease and closes pending sessions. Resuming never revives or delivers results from old requests. Business services come from installed capabilities; the Provider never installs them automatically or simulates approval.
 
-Extension-specific request/log entry points are not provided. Retained pages still depend on the Provider connection for emulation and host services; explicitly clear emulation before `finish` when a normal page is wanted.
+If `get_capabilities` lists `tab_checkpoint`, `get_requests`, and `get_logs`, take a checkpoint on the target tab and pass its `cursor` as `after` when querying. Use the same `--browser` and `tabId` for each call. Take a new checkpoint after regaining control.
+
+Retained pages still depend on the Provider connection for emulation and host services. Explicitly clear emulation before `finish` when a normal page is wanted.
 
 An interrupted environment mutation quarantines that page; only closing it remains available. Connection failures and timeouts are never automatically replayed. Inspect the outcome before choosing recovery. Cleanup excludes user Spaces and unrelated tasks.

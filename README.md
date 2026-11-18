@@ -54,7 +54,7 @@ mearl get_capabilities --browser '<browserId>'
 mearl set_app_profile --browser '<browserId>' --payload '{"tabId":1,"enabled":true,"profile":"<installed-app-id>"}'
 ```
 
-设备与 App 分别设置和清除；App 配置来自本机已安装能力，设置或清除会刷新页面。支持设备外壳和根 WebView，真实授权仍需用户完成。不提供扩展专属的请求与日志入口。
+设备与 App 分别设置和清除；App 配置来自本机已安装能力，设置或清除会刷新页面。支持设备外壳和根 WebView，真实授权仍需用户完成。请求和控制台采集能力以 `get_capabilities` 为准。
 
 连接中断或超时不会自动重放操作；重启 Provider、按 Space ID 重新关联后，先核对页面和模拟状态。平台路径、扩展共存、模拟行为及恢复限制见[使用指南](https://github.com/mearlhq/provider-ego/blob/main/docs/usage.md)。
 

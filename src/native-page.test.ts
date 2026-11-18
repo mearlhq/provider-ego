@@ -1,9 +1,12 @@
 import { expect, it, vi } from 'vitest';
 const setup = vi.hoisted(() => ({ options: undefined as any, suspend: vi.fn(), dispose: vi.fn() }));
-vi.mock('@mearl/native-host/external-page-host', () => ({ createExternalPageHost: async (options: any) => {
-  setup.options = options;
-  return { suspend: setup.suspend, dispose: setup.dispose };
-} }));
+vi.mock('@mearl/native-host/external-page-host', () => ({
+  EXTERNAL_PAGE_CAPTURE_ACTIONS: ['tab_checkpoint', 'get_requests', 'get_logs'],
+  createExternalPageHost: async (options: any) => {
+    setup.options = options;
+    return { suspend: setup.suspend, dispose: setup.dispose };
+  },
+}));
 
 it('multiplexes native replies without losing refreshed SDK callbacks or task selection', async () => {
   vi.useFakeTimers();
@@ -18,6 +21,10 @@ it('multiplexes native replies without losing refreshed SDK callbacks or task se
   const { nativePage, disposeNativePages } = await import('./native-page.js');
   const page = { targetId: undefined as string | undefined, url: async () => { page.targetId = 'target'; return 'https://example.test'; } };
   await nativePage(9, 1, page, { cdp: async () => ({ sessionId: 'session' }) });
+  expect(setup.options.consoleDomain).toBe('Console');
+  ego.listTabs.mockRejectedValueOnce(new Error('user has control'));
+  await expect(setup.options.assertControl()).rejects.toThrow('user has control');
+  expect(setup.suspend).toHaveBeenCalledOnce();
   ego.listTabs.mockClear();
   await vi.advanceTimersByTimeAsync(60_000);
   expect(ego.listTabs).not.toHaveBeenCalled();

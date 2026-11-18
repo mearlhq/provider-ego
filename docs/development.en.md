@@ -8,6 +8,8 @@
 
 Source builds use the locked, published SDK: run `pnpm install --frozen-lockfile --ignore-scripts` and `pnpm build`, then install and register with `npx @mearl/setup@latest provider install '@mearl/provider-ego@/absolute/path/to/provider-ego'`. The SDK is bundled into the Provider, so a built package needs no additional Native Host process. To test an unpublished SDK, pack Native Host as a tgz and override with `MEARL_EGO_NATIVE_HOST_PACKAGE=/absolute/path/to/native-host.tgz pnpm build`; remove `.cache/native-host` to return to the locked SDK.
 
+The Provider advertises capture actions when its bundled Native Host exports `EXTERNAL_PAGE_CAPTURE_ACTIONS` and supports capture across control changes. For a release that includes capture, pin the published Native Host that provides this contract, update the lockfile, and verify `get_capabilities` with a clean build.
+
 ## Validation
 
 ```bash

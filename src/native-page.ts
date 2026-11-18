@@ -1,4 +1,12 @@
-import { createExternalPageHost, type CdpTransport } from '@mearl/native-host/external-page-host';
+import * as nativeHost from '@mearl/native-host/external-page-host';
+import type { CdpTransport } from '@mearl/native-host/external-page-host';
+import type { ProviderAction } from '@mearl/provider';
+
+const { createExternalPageHost } = nativeHost;
+export const captureActions: readonly ProviderAction[] | undefined = Reflect.get(
+  nativeHost,
+  'EXTERNAL_PAGE_CAPTURE_ACTIONS',
+);
 
 const ego = (globalThis as any).ego;
 type Host = Awaited<ReturnType<typeof createExternalPageHost>>;
@@ -20,8 +28,7 @@ async function probeControl() {
   probing = true;
   try {
     for (const id of new Set([...activeHosts].map(key => Number(key.split(':')[0])))) {
-      try { await assertEgoControl(id); }
-      catch { for (const [key, entry] of hosts) if (key.startsWith(`${id}:`)) void entry.host.then(host => host.suspend()).catch(() => {}); }
+      await assertEgoControl(id).catch(() => {});
     }
   } finally { probing = false; }
 }
@@ -68,9 +75,16 @@ function installMux() {
 }
 
 export async function assertEgoControl(spaceId: number) {
-  ego.useTaskSpace(spaceId);
-  const result = await ego.listTabs();
-  if (result?.error) throw new Error(`${result.error_code}: ${result.error}`);
+  try {
+    ego.useTaskSpace(spaceId);
+    const result = await ego.listTabs();
+    if (result?.error) throw new Error(`${result.error_code}: ${result.error}`);
+  } catch (error) {
+    for (const [key, entry] of hosts) {
+      if (key.startsWith(`${spaceId}:`)) void entry.host.then(host => host.suspend()).catch(() => {});
+    }
+    throw error;
+  }
 }
 
 function transport(spaceId: number): CdpTransport {
@@ -113,7 +127,8 @@ export async function nativePage(spaceId: number, tabId: number, page: any, task
       const { sessionId } = await task.cdp('Target.attachToTarget', { targetId, flatten: true });
       const current = hosts.get(key);
       if (current?.host === host) current.sessionId = sessionId;
-      return createExternalPageHost({ tabId, targetId, sessionId, url, transport: transport(spaceId), assertControl: () => assertEgoControl(spaceId), onHostActivity: active => {
+      const consoleCapture = { consoleDomain: 'Console' } as const;
+      return createExternalPageHost({ ...consoleCapture, tabId, targetId, sessionId, url, transport: transport(spaceId), assertControl: () => assertEgoControl(spaceId), onHostActivity: active => {
         if (hosts.get(key)?.host === host) hostActivity(key, active);
       } });
     })();

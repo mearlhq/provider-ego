@@ -54,7 +54,7 @@ mearl get_capabilities --browser '<browserId>'
 mearl set_app_profile --browser '<browserId>' --payload '{"tabId":1,"enabled":true,"profile":"<installed-app-id>"}'
 ```
 
-Set and clear device and App independently. App definitions come from locally installed capabilities; setting or clearing an App reloads the page. Device shells and root WebViews are supported. Real authorization requires user approval. Extension-specific request and log entry points are unavailable.
+Set and clear device and App independently. App definitions come from locally installed capabilities; setting or clearing an App reloads the page. Device shells and root WebViews are supported. Real authorization requires user approval. Check `get_capabilities` for request and console capture support.
 
 Connection loss and timeouts never replay operations automatically. Restart the Provider, reattach by Space ID, and verify page and emulation state first. See the [usage guide](https://github.com/mearlhq/provider-ego/blob/main/docs/usage.en.md) for platform paths, extension coexistence, emulation behavior and recovery limits.
 

@@ -1,6 +1,6 @@
 import { createInterface } from 'node:readline';
 import { createConnection } from 'node:net';
-import { nativePage, disposeNativePages } from './native-page.js';
+import { captureActions, nativePage, disposeNativePages } from './native-page.js';
 
 const sdk = globalThis as any;
 export const tabIdOf = (label: string): number => {
@@ -20,7 +20,7 @@ export async function dispatch(operation: string, data: any): Promise<any> {
   if (operation === 'launch') {
     if ((data.spaceId === undefined) === (data.name === undefined)) throw new Error('Specify exactly one of name or spaceId');
     const task = await sdk.taskSpace(data.spaceId ?? data.name);
-    return { id: task.spaceId, name: task.name, ownership: task.ownership };
+    return { id: task.spaceId, name: task.name, ownership: task.ownership, captureActions };
   }
   if (operation === 'resume') {
     const task = await sdk.takeOverTaskSpace(data.spaceId);

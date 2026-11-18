@@ -57,6 +57,8 @@ mearl set_app_profile --browser '<browserId>' --payload '{"tabId":1,"enabled":tr
 
 通过 `set_device_emulation` 或 `set_app_profile.emulation` 设置 `deviceShell: true`，启用设备外壳与根 WebView。共享宿主负责容器导航、iframe、网络控制和已安装 App 的协议请求、身份与授权桥。授权进度和二维码交给页面运行时展示，真实批准仍需用户完成。接管会中止授权租约并关闭待授权会话；交还后旧请求不会恢复或回传结果。业务能力按本机已安装声明提供，不自动安装，也不模拟真实批准。
 
-不提供扩展专属请求/日志入口。被保留页面的模拟和宿主服务仍依赖 Provider 连接；需要普通页面时，在 `finish` 前显式清除模拟。
+如果 `get_capabilities` 列出 `tab_checkpoint`、`get_requests` 和 `get_logs`，先为目标标签页获取 checkpoint，再把返回的 `cursor` 传给查询的 `after`。查询复用原来的 `--browser` 和 `tabId`。控制权交还后重新获取 checkpoint。
+
+被保留页面的模拟和宿主服务仍依赖 Provider 连接；需要普通页面时，在 `finish` 前显式清除模拟。
 
 模拟变更中断时隔离该页，拒绝继续操作，允许关闭该任务页。连接中断和超时不会自动重放请求；先核对效果，再决定恢复方式。用户 Space 与其他任务页面不参与清理。
