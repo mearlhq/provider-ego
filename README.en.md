@@ -13,7 +13,7 @@ Requires **Node.js ≥ 22.23.4**, **Mearl ≥ 3.0.7**, and completed Ego Lite on
 Install the Provider and create a task Space:
 
 ```bash
-npx @mearl/setup@latest provider install @mearl/provider-ego
+npx @mearl/setup provider install @mearl/provider-ego
 mearl browser_launch --payload '{"provider":"ego","providerOptions":{"name":"My task"}}'
 ```
 

@@ -6,7 +6,7 @@
 
 ## 本地构建与安装
 
-源码构建使用锁定的已发布 SDK：执行 `pnpm install --frozen-lockfile --ignore-scripts` 和 `pnpm build`，再用 `npx @mearl/setup@latest provider install '@mearl/provider-ego@/absolute/path/to/provider-ego'` 安装并注册。SDK 会打包进 Provider，安装成品无需另起 Native Host 进程。测试尚未发布的 SDK 时，可将 Native Host 打包为 tgz 并通过 `MEARL_EGO_NATIVE_HOST_PACKAGE=/absolute/path/to/native-host.tgz pnpm build` 覆盖；删除 `.cache/native-host` 后恢复使用锁定的 SDK。
+源码构建使用锁定的已发布 SDK：执行 `pnpm install --frozen-lockfile --ignore-scripts` 和 `pnpm build`，再用 `npx @mearl/setup provider install '@mearl/provider-ego@/absolute/path/to/provider-ego'` 安装并注册。SDK 会打包进 Provider，安装成品无需另起 Native Host 进程。测试尚未发布的 SDK 时，可将 Native Host 打包为 tgz 并通过 `MEARL_EGO_NATIVE_HOST_PACKAGE=/absolute/path/to/native-host.tgz pnpm build` 覆盖；删除 `.cache/native-host` 后恢复使用锁定的 SDK。
 
 当打包的 Native Host 导出 `EXTERNAL_PAGE_CAPTURE_ACTIONS` 并支持控制权交接时的采集隔离，Provider 才声明采集能力。发布包含采集能力的版本时，先锁定提供该契约的已发布 Native Host，更新锁文件，并用干净构建验证 `get_capabilities`。
 

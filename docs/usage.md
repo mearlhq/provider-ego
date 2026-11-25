@@ -13,7 +13,7 @@ Provider 优先从自身 PATH 查找 `ego-browser`，macOS 上也会检查 Ego �
 Windows 查找 PATH 中的原生 `ego-browser.exe`，再检查 `%USERPROFILE%\.local\share\ego\active_version_dir\ego-browser.exe`，直接启动而不经过 shell。该安装入口有[Windows 使用记录](https://github.com/openai/codex/issues/60444)；路径解析已覆盖单元测试，尚未完成 Windows 真机验证。Linux 尚不在 Ego Lite 官方支持的平台内。
 
 ```bash
-npx @mearl/setup@latest provider install @mearl/provider-ego
+npx @mearl/setup provider install @mearl/provider-ego
 mearl browser_launch --payload '{"provider":"ego","providerOptions":{"name":"我的任务"}}'
 ```
 

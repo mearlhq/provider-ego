@@ -13,7 +13,7 @@ The Provider looks for `ego-browser` on its PATH first. On macOS it also checks 
 On Windows, the Provider looks for native `ego-browser.exe` on PATH, then checks `%USERPROFILE%\.local\share\ego\active_version_dir\ego-browser.exe`, launching directly without a shell. This installation entry is supported by a [Windows usage report](https://github.com/openai/codex/issues/60444). Path resolution has unit test coverage; a real Windows end-to-end run is still pending. Linux is not yet an officially supported Ego Lite platform.
 
 ```bash
-npx @mearl/setup@latest provider install @mearl/provider-ego
+npx @mearl/setup provider install @mearl/provider-ego
 mearl browser_launch --payload '{"provider":"ego","providerOptions":{"name":"My task"}}'
 ```
 

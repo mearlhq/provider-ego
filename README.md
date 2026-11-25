@@ -13,7 +13,7 @@
 安装 Provider，并创建一个任务 Space：
 
 ```bash
-npx @mearl/setup@latest provider install @mearl/provider-ego
+npx @mearl/setup provider install @mearl/provider-ego
 mearl browser_launch --payload '{"provider":"ego","providerOptions":{"name":"我的任务"}}'
 ```
 
