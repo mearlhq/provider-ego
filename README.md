@@ -2,56 +2,57 @@
 
 [简体中文](README.md) | [English](README.en.md)
 
-让 Mearl 通过 Ego Lite 的原生通道操作浏览器。每个任务使用一个独立 Space，无需浏览器扩展或额外的协作 Skill。
+让 Mearl 会话绑定独立 Ego Space。Space 生命周期由 Ego 原生通道管理，已启用的 Mearl 扩展可执行匹配到同一 Space 的页面操作。
 
 支持页面导航、快照、点击、输入、JavaScript、截图和文件上传，也支持设备与已安装 App 的环境模拟。使用 Mearl 的统一命令即可操作。
 
 ## 开始使用
 
-需要 **Node.js ≥ 22.23.4**、**Mearl ≥ 3.0.7**，并已完成 Ego Lite 引导安装，使 `ego-browser` 可用。已在 Ego Lite 0.6.2.9 验证；Windows 路径解析有单元测试，尚未完成真机验证，Linux 暂不在 Ego Lite 官方支持范围内。
+需要 **Node.js ≥ 22.23.4**、支持 Provider 任务会话的 Mearl，并已完成 Ego Lite 引导安装，使 `ego-browser` 可用。已在 Ego Lite 0.6.2.9 验证；Windows 路径解析有单元测试，尚未完成真机验证，Linux 暂不在 Ego Lite 官方支持范围内。
 
-安装 Provider，并创建一个任务 Space：
+安装 Provider，启动 Ego Lite，再用浏览器列表返回的 ID 创建会话。
 
 ```bash
 npx @mearl/setup provider install @mearl/provider-ego
-mearl browser_launch --payload '{"provider":"ego","providerOptions":{"name":"我的任务"}}'
+mearl browser_list
+mearl session_manage --browser '<browserId>' --payload '{"operation":"new","providerOptions":{"name":"我的任务"}}'
 ```
 
-保存返回的完整 `browserId`。后续命令都使用它，不传 `--session`：
+保存返回的 `sessionId`。`session.task.pageTransport` 显示页面操作所用的通道。
 
 ```bash
-mearl tab_open --browser '<browserId>' --payload '{"url":"https://example.com","reuse":"never"}'
-mearl tab_list --browser '<browserId>'
-mearl page_snapshot --browser '<browserId>' --payload '{"tabId":1}'
+mearl tab_open --session '<sessionId>' --payload '{"url":"https://example.com","reuse":"never"}'
+mearl tab_list --session '<sessionId>'
+mearl page_snapshot --session '<sessionId>' --payload '{"tabId":1}'
 ```
 
 将示例中的 `tabId: 1` 换成实际返回的页面 ID。页面操作后，通过快照或页面状态核验结果。
 
-已有任务可用 `providerOptions.spaceId` 重新关联，不与 `name` 同时传入；只能关联 Agent 所有的 Space。用 `mearl ego` 查看 Provider 指引，或用 `mearl browser_launch --help` 核对启动参数。
+已有任务可用 `providerOptions.spaceId` 重新关联，不与 `name` 同时传入；只能关联 Agent 所有的 Space。用 `mearl ego` 查看 Provider 指引，或用 `mearl session_manage --help` 核对参数。
 
 ## 交还与结束任务
 
 交给用户操作时使用 `handoff`；用户明确交还控制权后，才使用 `resume`：
 
 ```bash
-mearl browser_control --browser '<browserId>' --payload '{"operation":"handoff"}'
-mearl browser_control --browser '<browserId>' --payload '{"operation":"resume"}'
+mearl session_manage --session '<sessionId>' --payload '{"operation":"handoff"}'
+mearl session_manage --session '<sessionId>' --payload '{"operation":"resume"}'
 ```
 
-完成任务后，用 `finish` 结束 Space。默认关闭 Agent 页面；需要留下结果页时，传入实际页面 ID：
+完成任务后用 `end` 结束会话。默认关闭本次会话新建的页面，可以传入实际页面 ID 保留结果。
 
 ```bash
-mearl browser_control --browser '<browserId>' --payload '{"operation":"finish","keepTabIds":[1,2]}'
+mearl session_manage --session '<sessionId>' --payload '{"operation":"end","keepTabIds":[1,2]}'
 ```
 
-用户页面受 Ego 保护。`browser_release` 只解绑 Provider，不结束 Space，也不恢复模拟。保留页面的模拟依赖 Provider 连接，需要普通页面时应在结束前清除模拟。
+用户页面受 Ego 保护。需要把保留的页面恢复为普通页面时，在结束前显式清除模拟。
 
 ## 设备与 App 模拟
 
 ```bash
-mearl set_device_emulation --browser '<browserId>' --payload '{"tabId":1,"enabled":true,"preset":"iphone-17-pro"}'
-mearl get_capabilities --browser '<browserId>'
-mearl set_app_profile --browser '<browserId>' --payload '{"tabId":1,"enabled":true,"profile":"<installed-app-id>"}'
+mearl set_device_emulation --session '<sessionId>' --payload '{"tabId":1,"enabled":true,"preset":"iphone-17-pro"}'
+mearl get_capabilities --session '<sessionId>'
+mearl set_app_profile --session '<sessionId>' --payload '{"tabId":1,"enabled":true,"profile":"<installed-app-id>"}'
 ```
 
 设备与 App 分别设置和清除；App 配置来自本机已安装能力，设置或清除会刷新页面。支持设备外壳和根 WebView，真实授权仍需用户完成。请求和控制台采集能力以 `get_capabilities` 为准。

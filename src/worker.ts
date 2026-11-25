@@ -20,11 +20,16 @@ export async function dispatch(operation: string, data: any): Promise<any> {
   if (operation === 'launch') {
     if ((data.spaceId === undefined) === (data.name === undefined)) throw new Error('Specify exactly one of name or spaceId');
     const task = await sdk.taskSpace(data.spaceId ?? data.name);
+    if (task.ownership !== 'agent') throw new Error('Ego Space is not Agent-owned');
     return { id: task.spaceId, name: task.name, ownership: task.ownership, captureActions };
   }
   if (operation === 'resume') {
     const task = await sdk.takeOverTaskSpace(data.spaceId);
     return { spaceId: task.spaceId, control: 'agent' };
+  }
+  if (operation === 'handoff') {
+    const current = (await sdk.listTaskSpaces()).find((space: any) => space.id === data.spaceId);
+    if (current?.ownership === 'agentDelegatedToUser') return { spaceId: data.spaceId, control: 'user' };
   }
   const task = await sdk.taskSpace(data.spaceId);
   if (operation === 'handoff') { await task.handOff(); return { spaceId: task.spaceId, control: 'user' }; }
@@ -46,7 +51,7 @@ export async function dispatch(operation: string, data: any): Promise<any> {
   if (operation === 'target') {
     const page = pageFor(task, data.tabId);
     const tree = await page.cdp('Page.getFrameTree');
-    return { tabId: data.tabId, ready: true, mainFrameId: tree.frameTree.frame.id, url: tree.frameTree.frame.url };
+    return { tabId: data.tabId, ready: true, targetId: page.targetId, mainFrameId: tree.frameTree.frame.id, url: tree.frameTree.frame.url };
   }
   if (operation !== 'action') throw new Error(`Unknown operation ${operation}`);
   const { action, payload: p } = data;
@@ -56,7 +61,8 @@ export async function dispatch(operation: string, data: any): Promise<any> {
     if (p.reuse && p.reuse !== 'never') throw new Error('Use tab_list and page_navigate for explicit reuse');
     const pages = await task.pages();
     const blank = ['about:blank', 'chrome://new-tab-page/', 'chrome://newtab/'];
-    const page = pages.length === 1 && blank.includes(await pages[0].url()) && pages[0].openedBy === 'agent' ? pages[0] : await task.newPage();
+    const reused = pages.length === 1 && blank.includes(await pages[0].url()) && pages[0].openedBy === 'agent';
+    const page = reused ? pages[0] : await task.newPage();
     const tabId = tabIdOf(page.label);
     if (p.emulation || p.appProfile) {
       const host = await nativePage(data.spaceId, tabId, page, task);
@@ -64,7 +70,7 @@ export async function dispatch(operation: string, data: any): Promise<any> {
       else await host.invoke('set_device_emulation', { ...p.emulation, enabled: true, reload: false });
       await host.invoke('page_navigate', { url: p.url });
     } else await page.goto(p.url);
-    return { tabId, url: await page.url(), title: await page.title() };
+    return { tabId, url: await page.url(), title: await page.title(), opened: !reused, reused };
   }
   const page = pageFor(task, p.tabId);
   if (action === 'tab_close') {

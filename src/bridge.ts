@@ -99,7 +99,12 @@ export class EgoBridge {
     if (remaining <= 0 || remaining > 2_147_483_647) throw new Error('Request deadline exceeded');
     const id = randomUUID();
     return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => this.fail(new Error('EGO_REQUEST_TIMEOUT: effects unconfirmed; no automatic retry')), remaining);
+      const timer = setTimeout(() => {
+        if (operation === 'target' || operation === 'list') {
+          this.pending.delete(id);
+          reject(new Error('EGO_PROBE_TIMEOUT: read-only probe timed out'));
+        } else this.fail(new Error('EGO_REQUEST_TIMEOUT: effects unconfirmed; no automatic retry'));
+      }, remaining);
       this.pending.set(id, { resolve, reject, timer });
       this.socket!.write(JSON.stringify({ id, operation, data, deadline }) + '\n');
     });

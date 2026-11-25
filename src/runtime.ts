@@ -1,4 +1,5 @@
 import { createProviderServer, type ProviderBrowser } from '@mearl/provider';
+import { ensureProviderControlHost, readProviderControlHost } from '@mearl/provider/host';
 import { EgoBridge } from './bridge.js';
 import { createEgoProvider } from './provider.js';
 
@@ -10,11 +11,18 @@ const publish = (browsers: ProviderBrowser[]) => {
   server.updateBrowsers(browsers);
   publishedBrowsers = signature;
 };
-const definition = createEgoProvider(bridge, publish);
+// Older Mearl hosts still support explicitly launched Space targets.
+const definition = createEgoProvider(bridge, publish, undefined, () => {
+  const host = readProviderControlHost();
+  return host && Reflect.get(host, 'taskSessionProtocolVersion') === 1 ? host.token : undefined;
+});
 const server = createProviderServer({ definition });
 let stopping = false;
 let polling = false;
+await ensureProviderControlHost();
+const initialBrowsers = await definition.listBrowsers!({});
 await server.start();
+publish(initialBrowsers);
 const timer = setInterval(async () => {
   if (stopping || polling) return;
   polling = true;
@@ -28,7 +36,7 @@ const timer = setInterval(async () => {
 timer.unref();
 async function stop() {
   if (stopping) return;
-  stopping = true; clearInterval(timer); bridge.close(); await server.stop();
+  stopping = true; clearInterval(timer); definition.dispose(); await server.stop();
 }
 process.once('SIGINT', () => void stop());
 process.once('SIGTERM', () => void stop());

@@ -1,7 +1,7 @@
 {
   "name": "@mearl/provider-ego",
   "version": "0.1.5",
-  "description": "Extension-free Ego Lite Space provider for Mearl",
+  "description": "Ego Lite browser discovery and Space lifecycle provider for Mearl",
   "type": "module",
   "license": "Apache-2.0",
   "repository": { "type": "git", "url": "git+https://github.com/mearlhq/provider-ego.git" },
@@ -27,18 +27,22 @@
     "provider": {
       "providerId": "ego", "name": "Ego Lite", "protocolVersion": 3,
       "entry": "./dist/runtime.js",
-      "extensionAgentDefault": { "macBundleIds": ["com.citrolabs.ego.lite"] },
       "browserType": {
         "name": "EgoLite", "controlSessionModes": ["external"],
         "help": [
-          "每个浏览器实例对应一个 Ego Space，无需安装浏览器扩展。",
+          "已运行的 EgoLite 由 browser_list 发现。使用 session_manage new 创建或关联任务 Space。",
           "填写任务名称新建 Space，或用 spaceId 接入已有的 Agent Space。用户自己的 Space 不会被自动接管。",
-          "用 mearl browser_control --browser <browserId> 交还控制权（handoff）、恢复控制（resume）或结束任务（finish）。结束时可用 keepTabIds 保留指定页面。仅在用户明确交回控制权后恢复。",
-          "Ego 不使用 Mearl 的 --session 参数。设备外壳、根 WebView 和已安装应用的宿主服务通过 Ego 原生 CDP 运行。实际授权需要用户确认。"
+          "用 session_manage 交还控制权（handoff）、恢复控制（resume）或结束任务（end）。结束时可用 keepTabIds 保留指定页面。仅在用户明确交回控制权后恢复。",
+          "使用 sessionId 操作 Space 内的页面。扩展可用时优先执行支持的页面操作，Space 生命周期由 Ego 原生通道管理。"
         ],
         "inputSchema": {
           "type": "object", "additionalProperties": false,
           "properties": {
+            "taskSession": {
+              "type": "object", "formHidden": true, "additionalProperties": false,
+              "properties": { "browserId": { "type": "string", "enum": ["local"] } },
+              "required": ["browserId"]
+            },
             "name": {
               "type": "string", "minLength": 1, "title": "任务名称",
               "placeholder": "例如：整理网页资料",
@@ -65,8 +69,9 @@
             }
           },
           "oneOf": [
-            {"type": "object", "properties": {"name": {"type": "string"}}, "required": ["name"], "additionalProperties": false},
-            {"type": "object", "properties": {"spaceId": {"type": "number"}}, "required": ["spaceId"], "additionalProperties": false}
+            {"type": "object", "properties": {"name": {"type": "string"}, "taskSession": {"type": "object", "properties": {}, "additionalProperties": true}}, "required": ["name"], "additionalProperties": false},
+            {"type": "object", "properties": {"spaceId": {"type": "number"}, "taskSession": {"type": "object", "properties": {}, "additionalProperties": true}}, "required": ["spaceId"], "additionalProperties": false},
+            {"type": "object", "properties": {"taskSession": {"type": "object", "properties": {}, "additionalProperties": true}}, "required": ["taskSession"], "additionalProperties": false}
           ]
         }
       }

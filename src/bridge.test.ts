@@ -19,7 +19,7 @@ function worker(_file: any, args: any) {
     createInterface({input:socket}).on('line', line => {
       const request = JSON.parse(line);
       if (request.operation === 'disconnect') process.exit(1);
-      if (request.operation === 'hang') return;
+      if (request.operation === 'hang' || request.operation === 'target') return;
       socket.write(JSON.stringify({id:request.id,result:request.operation})+'\\n');
     });
   `], { stdio: ['ignore', 'pipe', 'pipe'] });
@@ -52,6 +52,17 @@ it.each(['disconnect', 'hang'])('does not retry after a dispatched request %s', 
     await expect(bridge.request(operation, {}, Date.now() + 100)).rejects.toThrow(/EGO_CONNECTION_LOST|EGO_REQUEST_TIMEOUT/);
     await expect(bridge.request('retry')).rejects.toThrow('EGO_CONNECTION_LOST');
     expect(mocked).toHaveBeenCalledTimes(1);
+  } finally { bridge.close(); vi.restoreAllMocks(); }
+});
+
+it('allows a later action on the same connection after a target probe times out', async () => {
+  const mocked = vi.spyOn(childProcess, 'spawn').mockImplementation(worker as any);
+  const bridge = new EgoBridge('/test/ego-browser');
+  try {
+    await expect(bridge.request('ready')).resolves.toBe('ready');
+    await expect(bridge.request('target', {}, Date.now() + 100)).rejects.toThrow('EGO_PROBE_TIMEOUT');
+    await expect(bridge.request('next')).resolves.toBe('next');
+    expect(mocked).toHaveBeenCalledOnce();
   } finally { bridge.close(); vi.restoreAllMocks(); }
 });
 
